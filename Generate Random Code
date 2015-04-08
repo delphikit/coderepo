@@ -1,0 +1,48 @@
+
+SET NOCOUNT ON;
+
+DECLARE @Result TABLE (InsertID INT IDENTITY(100001,1), Code VARCHAR(10) PRIMARY KEY CLUSTERED(InsertID, Code))
+
+DECLARE @Char VARCHAR(26) SET @Char='ABCDEFGHJKMNPQRSTUVWXYZ'
+DECLARE @CharCount INT
+SET @CharCount=LEN(@Char)
+
+DECLARE @Pos1 INT 
+DECLARE @Pos2 INT 
+DECLARE @Pos3 INT 
+DECLARE @Pos4 INT 
+DECLARE @Pos5 INT 
+
+DECLARE @CurrentCounter INT
+DECLARE @MaxCounter INT
+SET @CurrentCounter=1
+SET @MaxCounter=50000
+
+DECLARE @NewCode VARCHAR(10)
+
+WHILE (@@ERROR=0 AND @CurrentCounter<=@MaxCounter)
+BEGIN
+
+	SET @Pos1=CEILING(RAND(CHECKSUM(NEWID()))*@CharCount); 
+	SET @Pos2=CEILING(RAND(CHECKSUM(NEWID()))*@CharCount); 
+	SET @Pos3=CEILING(RAND(CHECKSUM(NEWID()))*@CharCount); 
+	SET @Pos4=CEILING(RAND(CHECKSUM(NEWID()))*@CharCount);
+	SET @Pos5=CEILING(RAND(CHECKSUM(NEWID()))*@CharCount);
+
+	SET @NewCode=
+		SUBSTRING(@Char, @Pos1,1)+
+		SUBSTRING(@Char, @Pos2,1)+
+		SUBSTRING(@Char, @Pos3,1)+
+		SUBSTRING(@Char, @Pos4,1)+
+		SUBSTRING(@Char, @Pos5,1);
+
+	INSERT INTO @Result 
+	(Code)
+	select @NewCode
+
+	SET @CurrentCounter=@CurrentCounter+1;
+
+END
+
+SELECT * FROM @Result ORDER BY InsertID
+
